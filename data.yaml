@@ -1,0 +1,13 @@
+names:
+- car
+- free
+nc: 2
+roboflow:
+  license: MIT
+  project: real-time-parking-lot-vehicle-detection
+  url: https://universe.roboflow.com/swastik-abhijit-patra-zlamm/real-time-parking-lot-vehicle-detection/dataset/1
+  version: 1
+  workspace: swastik-abhijit-patra-zlamm
+test: ../test/images
+train: Real-time-parking-lot-vehicle-detection-1/train/images
+val: Real-time-parking-lot-vehicle-detection-1/valid/images
