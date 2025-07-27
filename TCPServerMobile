@@ -1,0 +1,48 @@
+import ui
+import threading
+import socket
+import time
+
+view = ui.View()
+view.background_color = 'grey'
+view.present('fullscreen', hide_title_bar=True)
+
+flashing = False
+
+def flash_screen():
+    global flashing
+    flashing = True
+    colors = ['red', 'blue']
+    for i in range(10):  # Flash 10 times
+        view.background_color = colors[i % 2]
+        time.sleep(0.3)
+    view.background_color = 'black'
+    flashing = False
+
+def handle_client(client_socket, addr):
+    global flashing
+    print(f"📥 Connection from {addr}")
+    try:
+        while True:
+            data = client_socket.recv(1)  # Receive a single byte
+            if not data:
+                break
+            print(f"📨 Received byte: {data}")
+            if data == b'\x01' and not flashing:
+                threading.Thread(target=flash_screen).start()
+            client_socket.send(b"ACK\n")
+    except Exception as e:
+        print(f"⚠️ Error: {e}")
+    finally:
+        client_socket.close()
+
+def start_tcp_server():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('0.0.0.0', 3000))
+    server.listen(1)
+    print("📡 TCP server listening on port 3000...")
+    while True:
+        client_socket, addr = server.accept()
+        threading.Thread(target=handle_client, args=(client_socket, addr)).start()
+
+threading.Thread(target=start_tcp_server, daemon=True).start()
